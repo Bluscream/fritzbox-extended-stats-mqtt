@@ -1,0 +1,3 @@
+asyncio
+paho-mqtt
+python-dotenv
