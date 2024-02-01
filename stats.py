@@ -19,8 +19,6 @@ from responses.data import Root
 # get MQTT_HOST from dotenv
 
 load_dotenv()
-sid = ''
-important_values = [ 'DSLAM-Datenrate Max.', 'DSLAM-Datenrate Min.', 'Leitungskapazität' ]
 payload = {
     'xhr': '1',
     'lang': 'en',
@@ -70,6 +68,7 @@ conn = HTTPSConnection(
     context = _create_unverified_context()
 )
 def get_fritzbox_sid():
+    global payload
     conn.request("GET", "/login_sid.lua")
     response = conn.getresponse()
     challenge = ElementTree.fromstring(response.read()).findall(".//Challenge")[0].text
@@ -80,16 +79,15 @@ def get_fritzbox_sid():
     sid = ElementTree.fromstring(response.read()).findall(".//SID")[0].text
     # conn.close()
     log(f"Got new sid: {sid}")
+    payload['sid'] = sid
     return sid
 
 def get_stats():
-    global sid
-    payload['sid'] = sid if sid else get_fritzbox_sid()
     _payload = "&".join([f"{key}={value}" for key, value in payload.items()])
     conn.request("POST", "/data.lua", _payload, headers)
     res = conn.getresponse()
     if res.code == 303:
-        sid = get_fritzbox_sid()
+        get_fritzbox_sid()
         return get_stats()
     txt = res.read()
     utf8 = txt.decode("utf-8")
@@ -109,7 +107,7 @@ async def main():
                 continue
             # for name, val in vals.items():
             #     log(f"{name}: {val}")
-            log(f"DSLAM: {vals['DSLAM-Datenrate Max.']} / {vals['DSLAM-Datenrate Max.']} kbit/s (Cable: {vals['DSLAM-Datenrate Max.']} kbit/s)")
+            log(f"DSLAM: {vals['DSLAM-Datenrate Min.']} / {vals['DSLAM-Datenrate Max.']} kbit/s (Cable: {vals['Leitungskapazität']} kbit/s)")
             publish_stats(vals)
         except Exception as e: log(f"Error: {e}")
         await sleep_s(10)
