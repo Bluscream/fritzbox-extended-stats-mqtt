@@ -11,7 +11,7 @@ from typing import Any, Optional
 from sys import maxsize
 
 from ha_mqtt_discoverable import Settings
-from ha_mqtt_discoverable.sensors import Sensor, SensorInfo, DeviceInfo, NumberInfo, TextInfo, Number, Text
+from ha_mqtt_discoverable.sensors import SensorInfo, Sensor, DeviceInfo
 from http.client import HTTPSConnection, HTTPConnection
 from asyncio import sleep as sleep_s # from time import sleep
 from asyncio import run
@@ -118,17 +118,21 @@ def log(msg: str, ts: datetime = None):
 def sanitize(name: str) -> str:
     return name.lower().replace('ä','ae').replace('ü','ue').replace('ö','oe').replace(' ','_').replace('.','').replace('(','').replace(')','') # .join([c for c in name if ord(c) < 128 or c == '_']).lower()
 def is_number(val: object) -> bool: return isinstance(val, int) or isinstance(val, float)
-def dicts_are_different(a: dict, b: dict) -> bool:
-    if a is None or b is None: return True
-    if a.keys() != b.keys(): return True
-    for key in a.keys():
-        if a[key] != b[key]: return True
-    return False
+# def dicts_are_different(a: dict, b: dict) -> bool:
+#     if a is None or b is None: return True
+#     if a.keys() != b.keys(): return True
+#     for key in a.keys():
+#         if isinstance(a[key], dict) and isinstance(b[key], dict):
+#             if dicts_are_different(a[key], b[key]): return True
+#         if a[key] != b[key]: return True
+#     return False
 def get_changes_of_dicts(a: dict, b: dict) -> dict:
     if a is None or b is None: return a
     if a.keys() != b.keys(): return a
     changes = {}
     for key in a.keys():
+        if isinstance(a[key], dict) and isinstance(b[key], dict):
+            changes[key] = get_changes_of_dicts(a[key], b[key])
         if a[key] != b[key]: changes[key] = a[key]
     return changes
 def parse_dict(d: dict) -> dict:
@@ -153,19 +157,16 @@ def publish_sensor(uid: str, name: str, val: object):
         if name in category:
             template = sensor_templates[cat_name]
             break
-    if is_num: info = NumberInfo(name=name, device=mqtt_device, unique_id=uid, min=maxsize*-1, max=maxsize, mode=None, icon=template.get('icon') or None, state_class=template.get('state_class') or None, unit_of_measurement=template.get('unit_of_measurement') or None, device_class=template.get('device_class') or None)
-    else: info = TextInfo(name=name, device=mqtt_device, unique_id=uid, icon=template.get('icon') or None, state_class=template.get('state_class') or None, unit_of_measurement=template.get('unit_of_measurement') or None, device_class=template.get('device_class') or None)
+    info = SensorInfo(name=name, device=mqtt_device, unique_id=uid, icon=template.get('icon') or None, state_class=template.get('state_class') or None, unit_of_measurement=template.get('unit_of_measurement') or None, device_class=template.get('device_class') or None)
     settings = Settings(mqtt=mqtt_settings, entity=info)
     entity = None
-    if is_num: entity = Number(settings, my_callback)
-    else: entity = Text(settings, my_callback)
+    entity = Sensor(settings, my_callback)
     sensors_published[name] = entity
 def publish_stats(vals: dict[str, str]):
     for name, val in vals.items():
         uid = uid_prefix+sanitize(name)
         if not name in sensors_published.keys(): publish_sensor(uid, name, val)
-        if isinstance(sensors_published[name], Number): sensors_published[name].set_value(val)
-        elif isinstance(sensors_published[name], Text): sensors_published[name].set_text(val)
+        sensors_published[name].set_state(val)
 
 
 conn = HTTPSConnection(getenv("FRITZBOX_IP"),context = _create_unverified_context())
