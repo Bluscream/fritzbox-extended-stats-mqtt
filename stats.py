@@ -117,7 +117,7 @@ def log(msg: str, ts: datetime = None):
     print(f"{ts or datetime.now()} - {msg}")
 def sanitize(name: str) -> str:
     return name.lower().replace('ä','ae').replace('ü','ue').replace('ö','oe').replace(' ','_').replace('.','').replace('(','').replace(')','') # .join([c for c in name if ord(c) < 128 or c == '_']).lower()
-def is_number(val: object) -> bool: return isinstance(val, int) or isinstance(val, float)
+# def is_number(val: object) -> bool: return isinstance(val, int) or isinstance(val, float)
 # def dicts_are_different(a: dict, b: dict) -> bool:
 #     if a is None or b is None: return True
 #     if a.keys() != b.keys(): return True
@@ -131,8 +131,8 @@ def get_changes_of_dicts(a: dict, b: dict) -> dict:
     if a.keys() != b.keys(): return a
     changes = {}
     for key in a.keys():
-        if isinstance(a[key], dict) and isinstance(b[key], dict):
-            changes[key] = get_changes_of_dicts(a[key], b[key])
+        # if isinstance(a[key], dict) and isinstance(b[key], dict):
+        #     changes[key] = get_changes_of_dicts(a[key], b[key])
         if a[key] != b[key]: changes[key] = a[key]
     return changes
 def parse_dict(d: dict) -> dict:
@@ -146,7 +146,8 @@ def parse_dict(d: dict) -> dict:
 mqtt_settings = Settings.MQTT(host=getenv("MQTT_IP"), port=int(getenv("MQTT_PORT")), username=getenv("MQTT_USERNAME"), password=getenv("MQTT_PASSWORD"), )
 mqtt_device = DeviceInfo(name="Fritz!Box", identifiers="mqtt.fritzbox", model="Fritz!Box 7590", manufacturer="AVM")
 
-def my_callback(client: Any, user_data, message: Any): pass
+def my_callback(client: Any, user_data, message: Any):
+    log(f"Received message: {message.payload.decode('utf-8')}")
 
 def publish_sensor(uid: str, name: str, val: object):
     info = None
@@ -159,7 +160,6 @@ def publish_sensor(uid: str, name: str, val: object):
             break
     info = SensorInfo(name=name, device=mqtt_device, unique_id=uid, icon=template.get('icon') or None, state_class=template.get('state_class') or None, unit_of_measurement=template.get('unit_of_measurement') or None, device_class=template.get('device_class') or None)
     settings = Settings(mqtt=mqtt_settings, entity=info)
-    entity = None
     entity = Sensor(settings, my_callback)
     sensors_published[name] = entity
 def publish_stats(vals: dict[str, str]):
@@ -167,6 +167,7 @@ def publish_stats(vals: dict[str, str]):
         uid = uid_prefix+sanitize(name)
         if not name in sensors_published.keys(): publish_sensor(uid, name, val)
         sensors_published[name].set_state(val)
+        # log(f"Published {name}: {val}")
 
 
 conn = HTTPSConnection(getenv("FRITZBOX_IP"),context = _create_unverified_context())
@@ -201,19 +202,19 @@ def get_stats():
 async def main():
     last_vals = None
     while True:
-        # try:
+        try:
             stats = get_stats()
             vals = stats.data.get_all_values() # .get_values(important_values)
             changed = get_changes_of_dicts(vals, last_vals)
-            if len(changed) < 1:
+            if len(changed.keys()) < 1:
                 log("No changes")
                 continue
             last_vals = vals
-            # log(f"Changes: {changed}")
             # log(f"DSLAM: {vals['DSLAM-Datenrate Min.']} / {vals['DSLAM-Datenrate Max.']} kbit/s (Cable: {vals['Leitungskapazität']} kbit/s | ~{vals['ungefähre Leitungslänge']}m)")
             publish_stats(parse_dict(changed))
-        # except Exception as e:
-        #     log(f"Error: {e}")
+            # log(f"Published changes: {changed}")
+        except Exception as e:
+            log(f"Error: {e}")
             try: await sleep_s(10)
             except: sleep(10)
 
