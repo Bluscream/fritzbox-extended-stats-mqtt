@@ -1,0 +1,267 @@
+{
+    "pid": "dslStat",
+    "hide": {
+        "provServ": true,
+        "ssoSet": true,
+        "rrd": true
+    },
+    "timeTillLogout": "1199",
+    "time": [],
+    "data": {
+        "isConnected": true,
+        "negotiatedValues": [
+            {
+                "unit": "kbit\/s",
+                "title": "DSLAM-Datenrate Max.",
+                "val": [
+                    {
+                        "us": "32000",
+                        "ds": "80000"
+                    }
+                ]
+            },
+            {
+                "unit": "kbit\/s",
+                "title": "DSLAM-Datenrate Min.",
+                "val": [
+                    {
+                        "ds": "1152"
+                    }
+                ]
+            },
+            {
+                "unit": "kbit\/s",
+                "title": "Leitungskapazität",
+                "val": [
+                    {
+                        "us": "39793",
+                        "ds": "87156"
+                    }
+                ]
+            },
+            {
+                "unit": "kbit\/s",
+                "title": "Aktuelle Datenrate",
+                "val": [
+                    {
+                        "us": "32000",
+                        "ds": "79999"
+                    }
+                ]
+            },
+            {
+                "unit": "kbit\/s",
+                "title": "Min Effektive Datenrate",
+                "val": [
+                    {
+                        "us": "31995",
+                        "ds": "79988"
+                    }
+                ]
+            },
+            {
+                "title": "Nahtlose Ratenadaption",
+                "val": [
+                    {
+                        "us": "aus",
+                        "ds": "aus"
+                    }
+                ]
+            },
+            {
+                "title": "Trägertausch (Bitswap)",
+                "val": [
+                    {
+                        "us": "an",
+                        "ds": "an"
+                    }
+                ]
+            },
+            {
+                "title": ""
+            },
+            {
+                "unit": "ms",
+                "title": "Latenz",
+                "val": [
+                    {
+                        "us": "< 1",
+                        "ds": "< 1"
+                    }
+                ]
+            },
+            {
+                "title": "Impulsstörungsschutz (INP)",
+                "val": [
+                    {
+                        "us": "44.6",
+                        "ds": "70.0"
+                    }
+                ]
+            },
+            {
+                "title": "G.INP",
+                "val": [
+                    {
+                        "us": "an",
+                        "ds": "an"
+                    }
+                ]
+            },
+            {
+                "title": ""
+            },
+            {
+                "unit": "dB",
+                "title": "Störabstandsmarge",
+                "val": [
+                    {
+                        "us": "11",
+                        "ds": "8"
+                    }
+                ]
+            },
+            {
+                "unit": "dB",
+                "title": "Leitungsdämpfung",
+                "val": [
+                    {
+                        "us": "22",
+                        "ds": "19"
+                    }
+                ]
+            },
+            {
+                "unit": "m",
+                "title": "ungefähre Leitungslänge",
+                "val": [
+                    "455"
+                ]
+            },
+            {
+                "title": ""
+            },
+            {
+                "title": "Profil",
+                "val": [
+                    "17a"
+                ]
+            },
+            {
+                "title": "G.Vector",
+                "val": [
+                    {
+                        "us": "full",
+                        "ds": "full"
+                    }
+                ]
+            },
+            {
+                "title": ""
+            },
+            {
+                "title": "Trägersatz",
+                "val": [
+                    "B43"
+                ]
+            }
+        ],
+        "errorCounters": [
+            {
+                "title": "Sekunden mit"
+            },
+            {
+                "title": "Fehlern (ES)",
+                "val": [
+                    {
+                        "us": "0",
+                        "ds": "0"
+                    }
+                ]
+            },
+            {
+                "title": "Fehlern (SES)",
+                "val": [
+                    {
+                        "us": "0",
+                        "ds": "0"
+                    }
+                ]
+            },
+            {
+                "title": ""
+            },
+            {
+                "title": "Nicht behebbare Fehler (CRC)"
+            },
+            {
+                "title": "pro Minute",
+                "val": [
+                    {
+                        "us": "0",
+                        "ds": "0"
+                    }
+                ]
+            },
+            {
+                "title": "letzte 15 Minuten",
+                "val": [
+                    {
+                        "us": "0",
+                        "ds": "0"
+                    }
+                ]
+            },
+            {
+                "title": ""
+            },
+            {
+                "title": "korrigierte DTU"
+            },
+            {
+                "title": "pro Minute",
+                "val": [
+                    {
+                        "us": "0",
+                        "ds": "2.6"
+                    }
+                ]
+            },
+            {
+                "title": "letzte 15 Minuten",
+                "val": [
+                    {
+                        "us": "0",
+                        "ds": "36"
+                    }
+                ]
+            },
+            {
+                "title": ""
+            },
+            {
+                "title": "unkorrigierte DTU"
+            },
+            {
+                "title": "pro Minute",
+                "val": [
+                    {
+                        "us": "0",
+                        "ds": "0"
+                    }
+                ]
+            },
+            {
+                "title": "letzte 15 Minuten",
+                "val": [
+                    {
+                        "us": "0",
+                        "ds": "0"
+                    }
+                ]
+            }
+        ],
+        "dataType": "dsl"
+    },
+    "sid": "a0d8b1ab561581ec"
+}

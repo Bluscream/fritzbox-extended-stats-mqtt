@@ -107,7 +107,7 @@ async def main():
                 continue
             # for name, val in vals.items():
             #     log(f"{name}: {val}")
-            log(f"DSLAM: {vals['DSLAM-Datenrate Min.']} / {vals['DSLAM-Datenrate Max.']} kbit/s (Cable: {vals['Leitungskapazität']} kbit/s)")
+            log(f"DSLAM: {vals['DSLAM-Datenrate Min.']} / {vals['DSLAM-Datenrate Max.']} kbit/s (Cable: {vals['Leitungskapazität']} kbit/s | ~{vals['ungefähre Leitungslänge']}m)")
             publish_stats(vals)
         except Exception as e: log(f"Error: {e}")
         await sleep_s(10)
