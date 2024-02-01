@@ -150,8 +150,8 @@ def my_callback(client: Any, user_data, message: Any): pass
 
 def publish_sensor(uid: str, name: str, val: object):
     info = None
-    is_num = is_number(val)
-    log(f'name: {name} | isnum: {is_num} | type: {type(val)}')
+    # is_num = is_number(val)
+    # log(f'name: {name} | isnum: {is_num} | type: {type(val)}')
     template = {}
     for cat_name, category in sensors.items():
         if name in category:
@@ -209,7 +209,7 @@ async def main():
                 log("No changes")
                 continue
             last_vals = vals
-            log(f"Changes: {changed}")
+            # log(f"Changes: {changed}")
             # log(f"DSLAM: {vals['DSLAM-Datenrate Min.']} / {vals['DSLAM-Datenrate Max.']} kbit/s (Cable: {vals['Leitungskapazität']} kbit/s | ~{vals['ungefähre Leitungslänge']}m)")
             publish_stats(parse_dict(changed))
         # except Exception as e:
