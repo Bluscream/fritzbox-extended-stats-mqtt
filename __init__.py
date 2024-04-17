@@ -22,7 +22,20 @@ from responses.data import Root
 
 
 load_dotenv()
-uid_prefix = getenv("MQTT_UID_PREFIX") or "mqtt_fritzbox_"
+
+FRITZBOX_IP = getenv('FRITZBOX_IP') or "169.254.1.1"
+FRITZBOX_USERNAME = getenv("FRITZBOX_USERNAME") or "sysadmin"
+FRITZBOX_PASSWORD = getenv("FRITZBOX_PASSWORD") or ""
+FRITZBOX_MODEL = getenv("FRITZBOX_MODEL") or "Fritz!Box 7590"
+
+MQTT_UID_PREFIX = getenv("MQTT_MQTT_UID_PREFIX") or "mqtt_fritzbox_"
+MQTT_IP = getenv("MQTT_IP") or ""
+MQTT_PORT = getenv("MQTT_PORT") or ""
+MQTT_USERNAME = getenv("MQTT_USERNAME") or ""
+MQTT_PASSWORD = getenv("MQTT_PASSWORD") or ""
+
+
+
 payload = {
     'xhr': '1',
     'lang': 'en',
@@ -37,9 +50,9 @@ headers = {
     'Cache-Control': "no-cache",
     'Connection': "keep-alive",
     'Content-Type': "application/x-www-form-urlencoded",
-    'Origin': f"http://{getenv('FRITZBOX_IP')}",
+    'Origin': f"http://{FRITZBOX_IP}",
     'Pragma': "no-cache",
-    'Referer': f"http://{getenv('FRITZBOX_IP')}/",
+    'Referer': f"http://{FRITZBOX_IP}/",
     'User-Agent': "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36 OPR/106.0.0.0"
 }
 sensor_templates = {
@@ -143,8 +156,8 @@ def parse_dict(d: dict) -> dict:
             elif val.replace('.','',1).isdigit(): d[key] = float(val)
     return d
 
-mqtt_settings = Settings.MQTT(host=getenv("MQTT_IP"), port=int(getenv("MQTT_PORT")), username=getenv("MQTT_USERNAME"), password=getenv("MQTT_PASSWORD"), )
-mqtt_device = DeviceInfo(name="Fritz!Box", identifiers="mqtt.fritzbox", model="Fritz!Box 7590", manufacturer="AVM")
+mqtt_settings = Settings.MQTT(host=MQTT_IP, port=int(MQTT_PORT), username=MQTT_USERNAME, password=MQTT_PASSWORD, )
+mqtt_device = DeviceInfo(name="Fritz!Box", identifiers="mqtt.fritzbox", model=FRITZBOX_MODEL, manufacturer="AVM")
 
 def my_callback(client: Any, user_data, message: Any):
     log(f"Received message: {message.payload.decode('utf-8')}")
@@ -164,21 +177,21 @@ def publish_sensor(uid: str, name: str, val: object):
     sensors_published[name] = entity
 def publish_stats(vals: dict[str, str]):
     for name, val in vals.items():
-        uid = uid_prefix+sanitize(name)
+        uid = MQTT_UID_PREFIX+sanitize(name)
         if not name in sensors_published.keys(): publish_sensor(uid, name, val)
         sensors_published[name].set_state(val)
         # log(f"Published {name}: {val}")
 
 
-conn = HTTPSConnection(getenv("FRITZBOX_IP"),context = _create_unverified_context())
+conn = HTTPSConnection(FRITZBOX_IP,context = _create_unverified_context())
 def get_fritzbox_sid():
     global payload
     conn.request("GET", "/login_sid.lua")
     response = conn.getresponse()
     challenge = ElementTree.fromstring(response.read()).findall(".//Challenge")[0].text
-    hash = md5("{}-{}".format(challenge, getenv("FRITZBOX_PASSWORD")).encode("UTF-16LE")).hexdigest()
+    hash = md5("{}-{}".format(challenge, FRITZBOX_PASSWORD).encode("UTF-16LE")).hexdigest()
     response_string = "{}-{}".format(challenge, hash)
-    conn.request("GET", "/login_sid.lua?username={}&response={}".format(getenv("FRITZBOX_USERNAME"), response_string))
+    conn.request("GET", "/login_sid.lua?username={}&response={}".format(FRITZBOX_USERNAME, response_string))
     response = conn.getresponse()
     sid = ElementTree.fromstring(response.read()).findall(".//SID")[0].text
     log(f"Got new sid: {sid}")
