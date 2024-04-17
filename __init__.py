@@ -29,9 +29,9 @@ FRITZBOX_PASSWORD = getenv("FRITZBOX_PASSWORD") or ""
 FRITZBOX_MODEL = getenv("FRITZBOX_MODEL") or "Fritz!Box 7590"
 
 MQTT_UID_PREFIX = getenv("MQTT_MQTT_UID_PREFIX") or "mqtt_fritzbox_"
-MQTT_IP = getenv("MQTT_IP") or ""
-MQTT_PORT = getenv("MQTT_PORT") or ""
-MQTT_USERNAME = getenv("MQTT_USERNAME") or ""
+MQTT_IP = getenv("MQTT_IP") or "127.0.0.1"
+MQTT_PORT = getenv("MQTT_PORT") or 1883
+MQTT_USERNAME = getenv("MQTT_USERNAME") or "homeassistant"
 MQTT_PASSWORD = getenv("MQTT_PASSWORD") or ""
 
 
